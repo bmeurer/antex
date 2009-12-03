@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<antlib>
+	<taskdef name="dvips" classname="de.unisiegen.informatik.antex.DvipsTask" />
+	<taskdef name="latex" classname="de.unisiegen.informatik.antex.LatexTask" />
+	<taskdef name="ps2pdf" classname="de.unisiegen.informatik.antex.Ps2pdfTask" />
+</antlib>

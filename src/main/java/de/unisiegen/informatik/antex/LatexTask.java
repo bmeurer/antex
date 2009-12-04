@@ -112,6 +112,11 @@ public class LatexTask extends AbstractTask {
 			}
 			baseNames[i] = fileName.substring(0, indexOfDotTex);
 		}
+		
+		// all LaTeX files need atleast two runs because of toc, etc.
+		for (int i = 0; i < files.length; ++i) {
+			executeLatex(files[i], baseNames[i]);
+		}
 
 		// execute LaTeX until all files report success
 		boolean[] fileStati = new boolean[files.length];

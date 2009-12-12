@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Echo.EchoLevel;
 import org.apache.tools.ant.types.FileSet;
 
 /**
@@ -86,6 +85,7 @@ public class LatexTask extends AbstractTask {
 	 */
 	public Delete createDelete() {
 		Delete delete = (Delete)getProject().createTask("delete");
+		delete.setOwningTarget(getOwningTarget());
 		delete.setVerbose(isVerbose());
 		this.deletes.add(delete);
 		return delete;
@@ -127,7 +127,7 @@ public class LatexTask extends AbstractTask {
 			for (int i = 0; i < files.length; ++i) {
 				if (!fileStati[i]) {
 					if (tries == 5) {
-						log("Giving up after 4 attempts to fix unresolved references in LaTeX file " + files[i].getName(), EchoLevel.ERR.getLevel());
+						logError("Giving up after 4 attempts to fix unresolved references in LaTeX file " + files[i].getName());
 						break;
 					}
 					
@@ -168,7 +168,7 @@ public class LatexTask extends AbstractTask {
 			}
 		}
 		else {
-			log("Skipping deletes as there were unresolved references", EchoLevel.WARN.getLevel());
+			logWarning("Skipping deletes as there were unresolved references");
 		}
 	}
 	

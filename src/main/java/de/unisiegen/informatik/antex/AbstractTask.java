@@ -13,7 +13,6 @@ import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteStreamHandler;
 import org.apache.tools.ant.taskdefs.LogStreamHandler;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.taskdefs.Move;
 import org.apache.tools.ant.taskdefs.Echo.EchoLevel;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -142,7 +141,7 @@ public abstract class AbstractTask extends Task {
 			for (Iterator it = fileSets.iterator(); it.hasNext(); ) {
 				FileSet fileSet = (FileSet)it.next();
 				for (Iterator fit = fileSet.iterator(); fit.hasNext(); ) {
-					files.add(((FileResource)it.next()).getFile().getAbsoluteFile());
+					files.add(((FileResource)fit.next()).getFile().getAbsoluteFile());
 				}
 			}
 		}
@@ -181,6 +180,15 @@ public abstract class AbstractTask extends Task {
 	}
 	
 	/**
+	 * Log error messages.
+	 * 
+	 * @param msg the error message to log.
+	 */
+	protected void logError(String msg) {
+		log(msg, EchoLevel.ERR.getLevel());
+	}
+	
+	/**
 	 * Log verbose messages.
 	 * 
 	 * @param msg the verbose message to log.
@@ -191,19 +199,11 @@ public abstract class AbstractTask extends Task {
 	}
 	
 	/**
-	 * Rename the <code>source</code> file to the <code>dest</code> file.
+	 * Log warning messages.
 	 * 
-	 * @param source the source file.
-	 * @param dest the dest file.
-	 * 
-	 * @throws BuildException in case of an error.
+	 * @param msg the warning message to log.
 	 */
-	protected void renameFile(File source, File dest) throws BuildException {
-		Move move = (Move)getProject().createTask("move");
-		move.setFile(source);
-		move.setTofile(dest);
-		move.setVerbose(isVerbose());
-		move.setOwningTarget(getOwningTarget());
-		move.execute();		
+	protected void logWarning(String msg) {
+		log(msg, EchoLevel.WARN.getLevel());
 	}
 }

@@ -13,6 +13,20 @@ import org.apache.tools.ant.util.FileUtils;
  * @author Benedikt Meurer
  */
 public class SystemUtils {
+	public static void createLeadingDirectories(File file) throws BuildException {
+		try {
+			file = file.getCanonicalFile().getParentFile();
+			if (file != null) {
+				if (!file.mkdirs()) {
+					throw new BuildException("Failed to create directory " + file.getPath());
+				}
+			}
+		}
+		catch (IOException e) {
+			throw new BuildException("Failed to determine canonical path of " + file.getPath());
+		}
+	}
+	
 	/**
 	 * Generate the system specific executable name.
 	 * 

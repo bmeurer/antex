@@ -12,7 +12,6 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteStreamHandler;
 import org.apache.tools.ant.taskdefs.LogStreamHandler;
-import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.taskdefs.Echo.EchoLevel;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -118,12 +117,6 @@ public abstract class AbstractTask extends Task {
 	 */
 	public void execute() throws BuildException {
 		super.execute();
-		
-		// ensure that the destdir exists
-		Mkdir mkdir = (Mkdir)getProject().createTask("mkdir");
-		mkdir.setDir(getDestdir());
-		mkdir.setOwningTarget(getOwningTarget());
-		mkdir.execute();
 	}
 	
 	/**

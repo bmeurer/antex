@@ -159,6 +159,9 @@ public abstract class AbstractSimpleTask extends AbstractTask {
 			
 			// check if we need to do anything after all
 			if (fileUtils.fileNameEquals(infile, outfile) || !fileUtils.isUpToDate(infile, outfile)) {
+				// create the directories for the outfile
+				SystemUtils.createLeadingDirectories(outfile);
+				
 				// create a temporary file for the actual task (delete on exit)
 				File tmpfile = fileUtils.createTempFile("tmp", outfile.getName(), outfile.getParentFile(), true);
 

@@ -147,20 +147,16 @@ public class LatexTask extends AbstractTask {
 			List deletes = new LinkedList(this.deletes);
 			if (isCleanup()) {
 				// verbose logging
-				if (isVerbose()) {
-					log("Adding default delete patterns");
-				}
+				logVerbose("Adding default delete patterns");
 
 				// add the default patterns for each LaTeX file
 				Delete delete = (Delete)getProject().createTask("delete");
-				for (int i = 0; i < files.length; ++i) {
-					FileSet fileSet = new FileSet();
-					fileSet.setDir(files[i].getParentFile());
-					for (int j = 0; j < TEMPORARY_FILE_PATTERNS.length; ++j) {
-						fileSet.createInclude().setName(TEMPORARY_FILE_PATTERNS[j]);
-					}
-					delete.addFileset(fileSet);
+				FileSet fileSet = new FileSet();
+				fileSet.setDir(getDestdir());
+				for (int j = 0; j < TEMPORARY_FILE_PATTERNS.length; ++j) {
+					fileSet.createInclude().setName(TEMPORARY_FILE_PATTERNS[j]);
 				}
+				delete.addFileset(fileSet);
 				delete.setVerbose(isVerbose());
 				deletes.add(delete);
 			}
@@ -175,7 +171,7 @@ public class LatexTask extends AbstractTask {
 			log("Skipping deletes as there were unresolved references", EchoLevel.WARN.getLevel());
 		}
 	}
-
+	
 	/**
 	 * Execute the LaTeX interpreter on the specified <code>file</code>.
 	 * 
@@ -192,23 +188,21 @@ public class LatexTask extends AbstractTask {
 		File baseDirectory = file.getParentFile();
 		
 		// verbose logging
-		if (isVerbose()) {
-			log("Processing LaTeX file " + file.getName());
-		}
+		logVerbose("Processing LaTeX file " + file.getName());
 		
 		// prepare and run the latex command
-		String[] commandline = new String[5];
-		commandline[0] = SystemUtils.executableName(isPdf() ? "pdflatex" : "latex");
-		commandline[1] = "-file-line-error";
-		commandline[2] = "-halt-on-error";
-		commandline[3] = "-interaction=errorstopmode";
-		commandline[4] = file.getName();
+		LinkedList commandline = new LinkedList();
+		commandline.add(SystemUtils.executableName(isPdf() ? "pdflatex" : "latex"));
+		commandline.add("-file-line-error");
+		commandline.add("-halt-on-error");
+		commandline.add("-interaction=errorstopmode");
+		commandline.add("-output-directory");
+		commandline.add(getDestdir().getAbsolutePath());
+		commandline.add(file.getName());
 		launch(commandline, baseDirectory);
 		
 		// verbose logging
-		if (isVerbose()) {
-			log("Checking for unresolved references in LaTeX file " + file.getName());
-		}
+		logVerbose("Checking for unresolved references in LaTeX file " + file.getName());
 		
 		// open the <basename>.log file and check for unresolved references
 		String logFileName = baseName + ".log";
@@ -216,7 +210,7 @@ public class LatexTask extends AbstractTask {
 		try {
 			String line;
 			Pattern pattern = Pattern.compile("(Rerun (LaTeX|to get cross-references right)|Package glosstex Warning: Term |There were undefined references|Package natbib Warning: Citation\\(s\\) may have changed)");
-			BufferedReader reader = new BufferedReader(new FileReader(new File(baseDirectory, logFileName)));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(getDestdir(), logFileName)));
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
@@ -231,13 +225,11 @@ public class LatexTask extends AbstractTask {
 		}
 				
 		// verbose logging
-		if (isVerbose()) {
-			if (logFileIndicatesRerun) {
-				log("Log file " + logFileName + " indicates rerun for LaTeX file " + file.getName());
-			}
-			else {
-				log("Successfully processed LaTeX file " + file.getName());
-			}
+		if (logFileIndicatesRerun) {
+			logVerbose("Log file " + logFileName + " indicates rerun for LaTeX file " + file.getName());
+		}
+		else {
+			logVerbose("Successfully processed LaTeX file " + file.getName());
 		}
 		
 		return !logFileIndicatesRerun;

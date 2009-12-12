@@ -1,7 +1,7 @@
 package de.unisiegen.informatik.antex;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
@@ -67,12 +67,10 @@ public class DvipsTask extends AbstractTask {
 			File file = files[i];
 			
 			// verbose logging
-			if (isVerbose()) {
-				log("Processing DVI file " + file.getName());
-			}
+			logVerbose("Converting DVI file " + file.getName() + " to PostScript");
 			
 			// prepare and run the dvips command
-			Vector commandline = new Vector();
+			LinkedList commandline = new LinkedList();
 			commandline.add(SystemUtils.executableName("dvips"));
 			if (!isVerbose()) {
 				commandline.add("-q");
@@ -80,12 +78,10 @@ public class DvipsTask extends AbstractTask {
 			commandline.add("-o");
 			commandline.add(baseNames[i] + ".ps");
 			commandline.add(file.getName());
-			launch((String[])commandline.toArray(new String[0]), file.getParentFile());
+			launch(commandline, file.getParentFile());
 			
 			// verbose logging
-			if (isVerbose()) {
-				log("Successfully processed DVI file " + file.getName());
-			}
+			logVerbose("Successfully converted DVI file " + file.getName() + " to PostScript");
 		}
 		
 		// check if we should cleanup

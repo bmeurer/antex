@@ -1,7 +1,7 @@
 package de.unisiegen.informatik.antex;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
@@ -67,24 +67,20 @@ public class Ps2pdfTask extends AbstractTask {
 			File file = files[i];
 			
 			// verbose logging
-			if (isVerbose()) {
-				log("Processing PostScript file " + file.getName());
-			}
+			logVerbose("Processing PostScript file " + file.getName());
 			
 			// prepare and run the ps2pdf command
-			Vector commandline = new Vector();
+			LinkedList commandline = new LinkedList();
 			commandline.add(SystemUtils.executableName("ps2pdf"));
 			if (!isVerbose()) {
 				commandline.add("-q");
 			}
 			commandline.add(file.getName());
 			commandline.add(baseNames[i] + ".pdf");
-			launch((String[])commandline.toArray(new String[0]), file.getParentFile());
+			launch(commandline, file.getParentFile());
 			
 			// verbose logging
-			if (isVerbose()) {
-				log("Successfully processed PostScript file " + file.getName());
-			}
+			logVerbose("Successfully processed PostScript file " + file.getName());
 		}
 		
 		// check if we should cleanup
